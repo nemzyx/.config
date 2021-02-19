@@ -1,7 +1,7 @@
 # config
 Kitty, Vim, color schemes, etc... Everything related to dev environment and accesed via ~/.config
 
-###Setup (MacOS):
+### Setup (MacOS):
 To setup, simply download rep, and place into dot files folder on system.
 Navigate to the folder and run the shell script.
 
