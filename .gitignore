@@ -1,0 +1,11 @@
+/*
+/*/
+/nvim/undodir/*
+/nvim/.netrwhist
+/nvim/plugged/*
+*.save
+!/kitty/
+!/nvim/
+!SETUP_DOTFILES.sh
+!.gitignore
+!README.md
