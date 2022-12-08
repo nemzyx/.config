@@ -7,11 +7,24 @@ import random
 import time
 import os
 
+# make CTRL-C exit silently ------
+import signal
+import sys
+def exitProgram(x,y):
+  os.system("clear") # clear screen
+  sys.exit(0)
+signal.signal(signal.SIGINT, exitProgram)
+# --------------------------------
+
 # average reading speed in adults between 200-250 w/m
 READING_SPEED = 180 # words / min
 DECODE_TIME_OFFSET = 30 # seconds
 CREDITS_TIME = 20 # seconds
 SILENT_TIME  = 10 # seconds
+
+HOME = os.path.expanduser('~')
+POEMS_PATH = HOME+"/.config/nms-poetry/poems"
+DISPLAY_CENTER = HOME+"/.config/nms-poetry/display-center"
 
 os.system("clear") # clear screen
 
@@ -41,7 +54,7 @@ def poem_padding_calc(x):
 
 poems = {}
 
-ls = sorted(os.listdir('./poems'))
+ls = sorted(os.listdir(POEMS_PATH))
 for file in ls:
   filename = file[:-4] # remove extension
   title, author_meta = filename.split(" --- ")
@@ -55,7 +68,7 @@ for file in ls:
         meta_search[key] = str.split(key)[-1]
   lines = None
   words = 0
-  with open("./poems/" + file, 'r') as fp:
+  with open(POEMS_PATH+"/" + file, 'r') as fp:
     lines_array = fp.readlines()
     lines = len(lines_array)
     for line in lines_array:
@@ -86,7 +99,7 @@ def credits(poem, title):
   if poem["src"]:
     meta_cmd += 'origin: ' + poem["src"]
   meta_cmd += '"'
-  meta_cmd += ' | ./display-center'
+  meta_cmd += ' | ' + DISPLAY_CENTER
   meta_proc = subprocess.Popen(meta_cmd, shell=True)
   time.sleep(CREDITS_TIME)
   os.system("clear") # clear screen
@@ -100,9 +113,9 @@ def play_poem(title):
       print('\n' * poem_top_padding)
     else:
       print(('\n' * (poem_top_padding-2)))
-      ellipsis = 'echo "...\n\n" | ./display-center'
+      ellipsis = 'echo "...\n\n" | ' + DISPLAY_CENTER
       subprocess.Popen(ellipsis, shell=True)
-    nms_cmd = './display-center ' + '"poems/' + part["file"] + '"'
+    nms_cmd = DISPLAY_CENTER + ' ' + '"'+POEMS_PATH+'/' + part["file"] + '"'
     nms_cmd += " | nms -a"
     nms_proc = subprocess.Popen(nms_cmd, shell=True)
     time.sleep(calc_reading_time(part["words"]) + DECODE_TIME_OFFSET)

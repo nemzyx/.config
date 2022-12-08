@@ -9,4 +9,6 @@
 !SETUP_DOTFILES.sh
 !.gitignore
 !README.md
-!/nms-demo/
+!/bin/
+!/nms-poetry/
+!/profiles/
