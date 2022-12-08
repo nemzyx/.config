@@ -9,3 +9,10 @@ Navigate to the folder and run the shell script.
 
 ```chmod +x SETUP_DOTFILES.sh```
 ```sh SETUP_DOTFILES.sh```
+
+### Some nice brews (MacOS):
+```brew install no-more-secrets``` (for nms-demo)
+
+```brew install globe```
+
+```brew install yoggy/tap/sendosc```
