@@ -1,0 +1,12 @@
+#!/usr/bin/awk -f
+BEGIN {
+  cmd = "tput cols"
+  cmd | getline COLS
+  close(cmd)
+}
+{
+  z = COLS - length;
+  y = int(z / 2);
+  x = z - y;
+  printf "%*s%s%*s\n", x, "", $0, y, "";
+}
