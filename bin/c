@@ -1,0 +1,2 @@
+#!/bin/bash
+(cd ~/.config/igcc; ./igcc) # run g++ REPL

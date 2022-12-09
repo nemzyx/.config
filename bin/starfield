@@ -1,0 +1,4 @@
+#!/bin/bash
+
+(cd ~/.config/demos/Starfield; java -jar Starfield.jar)
+# sub process
