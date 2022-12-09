@@ -1,0 +1,8 @@
+#!/bin/zsh
+echo "" | gcc -xc - -v -E
+
+print ""
+print ""
+print "Try some of these include paths for vscode c/c++ dev"
+print ""
+print ""

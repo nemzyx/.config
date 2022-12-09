@@ -1,0 +1,17 @@
+#!/bin/zsh
+
+make && make clean
+
+# if arg supplied with
+# compiled bin name
+# it will run after make
+
+if [ $? -eq 0 ]; then # if compiled OK
+    if ! [ $# -eq 0 ]; then
+        clear
+        print "\n ✓ Compiled -> OK\n\n"
+        ./$1
+    fi
+else
+    echo FAIL
+fi
