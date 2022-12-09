@@ -21,6 +21,15 @@
 
 import libigcc.run
 
+# make CTRL-C exit silently ------
+import signal
+import sys
+def exitProgram(x,y):
+  # os.system("clear") # clear screen
+  sys.exit(0)
+signal.signal(signal.SIGINT, exitProgram)
+# --------------------------------
+
 if __name__ == "__main__":
 	libigcc.run.run()
 

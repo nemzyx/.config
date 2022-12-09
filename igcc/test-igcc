@@ -26,23 +26,7 @@ from libigcc.run import UserInput
 import libigcc.source_code
 import libigcc.version
 
-class FakeWriteableFile:
-	def __init__( self ):
-		self.lines = []
-
-	def write( self, line ):
-		self.lines.append( line )
-
-class FakeReadableFile:
-	def __init__( self, lines ):
-		self.lines = lines
-
-	def readline( self ):
-		if len( self.lines ) == 0:
-			return None
-		line = self.lines[0]
-		self.lines = self.lines[1:]
-		return line
+from libigcc.fake import FakeReadableFile, FakeWriteableFile
 
 def assert_strings_equal( str1, str2 ):
 	if str1 == str2:

@@ -113,7 +113,7 @@ def run_compile( subs_compiler_command, runner ):
 		if stderrdata is not None:
 			return stderrdata
 		else:
-			return "Unknown compile error - compiler did not write any output."
+			return "Unknown compile error - compiler did not write any output"
 		
 
 def run_exe( exefilename ):
@@ -122,9 +122,8 @@ def run_exe( exefilename ):
 	return run_process.communicate()
 
 def print_welcome():
-	print '''igcc $version
-Released under GNU GPL version 2 or later, with NO WARRANTY.
-Type ".h" for help.
+	print '''(GNU GPL) igcc $version\n
+Type .h for help
 '''.replace( "$version", version.VERSION )
 
 class UserInput:
@@ -190,7 +189,8 @@ class Runner:
 						self )
 
 					if self.compile_error is not None:
-						print "[Compile error - type .e to see it.]"
+						self.undo()
+						print "[Compile error - type .e to see it]"
 					else:
 						stdoutdata, stderrdata = run_exe( self.exefilename )
 
@@ -217,7 +217,6 @@ class Runner:
 		else:
 			return None
 
-
 	def undo( self ):
 		if self.input_num > 0:
 			self.input_num -= 1
@@ -241,8 +240,9 @@ class Runner:
 			lambda a: a.typ == UserInput.INCLUDE,
 			self.get_user_input() ) )
 
-	def get_user_commands_string( self ):
-		return "\n".join( self.get_user_commands() ) + "\n"
+	def get_user_commands_string( self, padding = '' ):
+		joiner = '\n' + padding
+		return joiner.join( self.get_user_commands() ) + "\n"
 
 	def get_user_includes_string( self ):
 		return "\n".join( self.get_user_includes() ) + "\n"
@@ -284,7 +284,8 @@ def run( outputfile = sys.stdout, inputfile = None, print_welc = True,
 			ret = "normal"
 			if print_welc:
 				print_welcome()
-			Runner( options, inputfile, exefilename ).do_run()
+			_runner = Runner( options, inputfile, exefilename )
+			_runner.do_run()
 		except dot_commands.IGCCQuitException:
 			ret = "quit"
 	finally:
@@ -293,5 +294,4 @@ def run( outputfile = sys.stdout, inputfile = None, print_welc = True,
 		if os.path.isfile( exefilename ):
 			os.remove( exefilename )
 
-	return ret
-
+	return ret, _runner
