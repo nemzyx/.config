@@ -13,7 +13,6 @@ cd ~/.config
 git clone https://github.com/ferry-creator/demos.git --recursive
 ```
 
-
 ### Setup (MacOS):
 To setup, simply download rep, and place into dot files folder on system.
 Navigate to the folder and run the shell script.
