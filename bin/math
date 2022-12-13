@@ -1,0 +1,153 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+# with <3 by ferry-creator
+# GNU GPL V2
+
+# ⟠⅀∑ nabla∇ delta∆ int∫ and⋀ or⋁ xor⊻ nand⊼ nor⊽
+#     of/in∈ subset⊂ exists/exist∃ sqrt√2 infinity/infty∞
+# wave∿ deg/degs/degree/degrees°
+
+
+# f(x) = a+b*x+c*x^2
+# f(x) = a + b·x + c·x² 
+
+# f(x) = a+b*x+c*x^(1+2⁻3*4567890)+100
+# f(x) = a + b·x + c·x¹⁺²⁻³⠁⁴⁵⁶⁷⁸⁹⁰ + 100
+
+LUT = {
+  # common
+  "*": "·", "/": "÷",
+  "<=|=<": "≤", "=>|>=": "≥", "~": "≈", # ~=|=~ is zsh reserved
+  "+-": "±", "-+": "∓",
+  "pi|Pi|PI": "π", "euler|e": "𝐞",
+  "sqrt|SQRT| sq ": "√",
+  # trig
+  "tau|Tau|TAU": "τ",
+  "deg|degree|degrees": "°", "phase|phi": "ϕ", "wave": "∿",
+  # linear algebra
+  "cross": "×", 
+  # calculus
+  "del|partial": "∂", "nabla|grad|gradient": "∇",
+  "delta": "δ", "Delta|D": "∆", " i ": "𝑖",
+  "goes|goto|->": "→", "infinity|infty": "∞",
+  # logic
+  " and | AND ": " ⋀ ", " or | OR ": " ⋁ ",
+  " xor | XOR ": " ⊻ ", " nand | NAND ": " ⊼ ", " nor | NOR ": " ⊽ ",
+  # arrows
+  "==>|implies": "⇒", "equivalent|eq|<==>|<=>": "⇔",
+  # sets
+  "naturals|N": "ℕ", "integers|ints|Z": "ℤ", "rationals|Q": "ℚ",
+  "reals|R": "ℝ", "complex numbers|complex|C": "ℂ",
+  " in | belong ": " ∈ ", " subset ": " ⊂ "
+}
+
+# superscript / subscript ---------------------------------
+superscript_sym = "ᴬᵃᴮᵇᶜᴰᵈᴱᵉᶠᶢᴴʰᴵⁱᴶʲᵏᴸᴹᵐᴺⁿᴼᵒᴾᵖᴿᵀᵗᵁᵘᵛᵂʷˣᶻ"
+map_super_sym   = "AaBbcDdEefgHhIiJjklMmNnOoPpRTtUuvWwxz"
+
+subscript_sym = "ₐₑᵢₒᵣᵤᵥₓ"
+map_sub_sym   = "aeioruvx"
+
+superscript_ops = "⁺⁻⁽⁾⠁"
+subscript_ops   = "₊₋₍₎⠄"
+map_ops         = "+-()*"
+
+superscript_num = "¹²³⁴⁵⁶⁷⁸⁹⁰"
+subscript_num   = "₁₂₃₄₅₆₇₈₉₀"
+map_num         = "1234567890"
+
+SUPER_MAP = map_super_sym + map_ops + map_num
+SUB_MAP   = map_sub_sym   + map_ops + map_num
+SUPER   = superscript_sym + superscript_ops + superscript_num
+SUB     = subscript_sym   + subscript_ops   + subscript_num
+
+def process_script(expr, activator, MAP, SCRIPT):
+  script = {"active": False, "parens": "", "start": 0}
+  for x in range(expr.count(activator)):
+    for i, char in enumerate(expr):
+      if char == activator: # '^' / '_', activates mode
+        script['active'] = True
+        script['start']  = i
+        expr = expr[:i] + expr[i+1:]
+      if script['active']:
+        o_parens = script["parens"].count('(')
+        c_parens = script["parens"].count(')')
+        if char == '(' or char == ')':
+          script["parens"] += char
+        break_mode = False
+        if char in " +-*/%=~" or c_parens > 0:
+          break_mode = True
+        if o_parens != c_parens: # cancel
+          break_mode = False
+        if break_mode:
+          if c_parens > 0:
+            # cleanup parens ->
+            first = expr[:script["start"]]
+            raisd = expr[script["start"]+1:i-2]
+            rest  = expr[i-1:]
+            expr  = first + raisd + rest
+          script = {"active": False, "parens": "", "start": 0}
+          break
+        if char in MAP:
+          mapidx = MAP.index(char)
+          expr   = expr[:i-1] + SCRIPT[mapidx] + expr[i:]
+  return expr
+# ---------------------------------------------------------
+
+import sys
+import re
+
+def findall_idxs(search, str, val):
+  idxs = []
+  for m in re.finditer(re.escape(search), str):
+    start = m.start()
+    end   = m.end()
+    dist = end - start
+    idxs.append( [start, end, dist, val] )
+  return idxs
+
+if __name__ == "__main__":
+  expr = " " + "".join(sys.argv[1:]) + " "
+  # superscrpit / subscript
+  # expr = process_script(expr, '^', SUPER_MAP, SUPER)
+  # expr = process_script(expr, '_', SUB_MAP,   SUB  )
+
+  # LUT logic
+  collected_idxs = []
+  for key in LUT:
+    patterns = key.split('|')
+    patterns = filter(lambda x: bool(x),patterns)
+    for pat in patterns:
+      if pat not in expr:
+        continue # early return
+      idxs = findall_idxs(pat,expr, LUT[key])
+      print("IDXs", idxs)
+      for idx in idxs:
+        start, end, dist, val = idx
+        cnt = 0
+        while cnt < len(collected_idxs):
+          if(cnt >= 1000): break # safety
+          past_idx = collected_idxs[cnt]
+          past_start, past_end, past_dist, past_val = past_idx
+          print(cnt, "checking", val, past_val)
+          if start <= past_start and end > past_start \
+          or end >= past_end and start <: # collision!
+            print("collision!", val, past_val)
+            if dist >= past_dist:
+              del collected_idxs[cnt]
+          else: # if no collision, increment loop
+            cnt += 1
+        collected_idxs.append(idx)
+        print("collected", list(map(lambda x: x[3],collected_idxs)))
+  # insert LUT replacements from collected idxs
+  collected_idxs=sorted(collected_idxs, key=lambda x: x[0])
+  offset = 0 # input is different length than replacement chars
+  for idx in collected_idxs:
+    start, end, dist, val = idx
+    expr = expr[:start-offset] + val + expr[end-offset:]
+    offset += dist-1
+  
+  #strip
+  expr = expr.strip()
+  print(expr)
